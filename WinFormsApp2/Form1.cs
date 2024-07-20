@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace WinFormsApp2
 {
@@ -14,29 +15,27 @@ namespace WinFormsApp2
         {
             InitializeComponent();
 
-           
             cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total", true);
             ramCounter = new PerformanceCounter("Memory", "Available MBytes", true);
-            // Инициализация PerformanceCounter для мониторинга CPU и памяти
 
-            System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer(); // Запуск таймера для обновления данных
-            timer.Interval = 500; // Интервал обновления данных в миллисекундах
+            System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
+            timer.Interval = 500;
             timer.Tick += Timer_Tick;
             timer.Start();
+
+            InitializeCharts();
         }
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            // Получение данных о CPU и RAM
             float cpuUsage = cpuCounter.NextValue();
             float availableRAM = ramCounter.NextValue();
 
-            // Отображение данных на форме
             cpuLabel.Text = $"Загрузка процессора: {cpuUsage}%";
             ramLabel.Text = $"Доступная оперативная память: {availableRAM} MB";
 
-            // Получение информации о дисках
             UpdateDiskInformation();
+            UpdateCharts(cpuUsage, availableRAM);
         }
 
         private void UpdateDiskInformation()
@@ -46,7 +45,7 @@ namespace WinFormsApp2
             DriveInfo[] drives = DriveInfo.GetDrives();
             foreach (DriveInfo drive in drives)
             {
-                if (drive.IsReady) // Проверка готовности диска к использованию
+                if (drive.IsReady)
                 {
                     string freeSpace = $"{drive.TotalFreeSpace / (1024 * 1024 * 1024)} GB свободно";
                     string totalSpace = $"{drive.TotalSize / (1024 * 1024 * 1024)} GB всего";
@@ -55,6 +54,75 @@ namespace WinFormsApp2
                     diskListBox.Items.Add(driveInfo);
                 }
             }
+        }
+
+        private void InitializeCharts()
+        {
+            // Настройки для графика процессора
+            var cpuChartArea = new ChartArea("CPUChartArea")
+            {
+                AxisX =
+                {
+                    Title = "Время",
+                    LabelStyle = { Format = "HH:mm:ss" }, // Форматирование оси X для отображения времени
+                    IntervalType = DateTimeIntervalType.Seconds // Интервал для оси X
+                },
+                AxisY =
+                {
+                    Title = "Загрузка процессора (%)"
+                }
+            };
+            cpuChart.ChartAreas.Add(cpuChartArea);
+            cpuChart.Series.Add(new Series("CPU Usage")
+            {
+                Color = System.Drawing.Color.Red,
+                ChartType = SeriesChartType.Line,
+                XValueType = ChartValueType.DateTime
+            });
+            cpuChart.Titles.Add("Загрузка процессора");
+
+            // Настройки для графика оперативной памяти
+            var ramChartArea = new ChartArea("RAMChartArea")
+            {
+                AxisX =
+                {
+                    Title = "Время",
+                    LabelStyle = { Format = "HH:mm:ss" }, // Форматирование оси X для отображения времени
+                    IntervalType = DateTimeIntervalType.Seconds // Интервал для оси X
+                },
+                AxisY =
+                {
+                    Title = "Доступная оперативная память (MB)"
+                }
+            };
+            ramChart.ChartAreas.Add(ramChartArea);
+            ramChart.Series.Add(new Series("Available RAM")
+            {
+                Color = System.Drawing.Color.Blue,
+                ChartType = SeriesChartType.Line,
+                XValueType = ChartValueType.DateTime
+            });
+            ramChart.Titles.Add("Доступная оперативная память");
+        }
+
+        private void UpdateCharts(float cpuUsage, float availableRAM)
+        {
+            DateTime now = DateTime.Now;
+            cpuChart.Series["CPU Usage"].Points.AddXY(now, cpuUsage);
+            ramChart.Series["Available RAM"].Points.AddXY(now, availableRAM);
+
+            // Удаляем точки, если их больше 60
+            if (cpuChart.Series["CPU Usage"].Points.Count > 60)
+            {
+                cpuChart.Series["CPU Usage"].Points.RemoveAt(0);
+            }
+            if (ramChart.Series["Available RAM"].Points.Count > 60)
+            {
+                ramChart.Series["Available RAM"].Points.RemoveAt(0);
+            }
+
+            cpuChart.ChartAreas[0].RecalculateAxesScale();
+            ramChart.ChartAreas[0].RecalculateAxesScale();
         }
     }
 }

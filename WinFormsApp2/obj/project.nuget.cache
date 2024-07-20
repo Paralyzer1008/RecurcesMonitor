@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "tGzk3hyzlANe5Ocnc8jAUdPPK67u+RnSzN03l0WxhYsk4bixRQ45vMq4nIh3LF33PbJF6Y4Z5iUcdlvYNKmXyg==",
+  "success": true,
+  "projectFilePath": "C:\\Дима\\Учеба\\Программирование на ЯВУ\\WinFormsApp2\\WinFormsApp2\\WinFormsApp2.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\sdmit\\.nuget\\packages\\system.configuration.configurationmanager\\8.0.0\\system.configuration.configurationmanager.8.0.0.nupkg.sha512",
+    "C:\\Users\\sdmit\\.nuget\\packages\\system.diagnostics.eventlog\\8.0.0\\system.diagnostics.eventlog.8.0.0.nupkg.sha512",
+    "C:\\Users\\sdmit\\.nuget\\packages\\system.diagnostics.performancecounter\\8.0.0\\system.diagnostics.performancecounter.8.0.0.nupkg.sha512",
+    "C:\\Users\\sdmit\\.nuget\\packages\\system.security.cryptography.protecteddata\\8.0.0\\system.security.cryptography.protecteddata.8.0.0.nupkg.sha512",
+    "C:\\Users\\sdmit\\.nuget\\packages\\winforms.datavisualization\\1.9.2\\winforms.datavisualization.1.9.2.nupkg.sha512"
+  ],
+  "logs": []
+}
